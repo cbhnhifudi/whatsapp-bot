@@ -31,8 +31,7 @@ if (process.env.MONGO_URI) {
                 }),
                 puppeteer: {
                     headless: true,
-                    // נתיב מפורש לדפדפן כרום שהותקן בשרת של Render
-                    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, 
+                    // אין צורך ב-executablePath! פופיטר ימצא לבד לפי ה-config
                     args: [
                         '--no-sandbox',
                         '--disable-setuid-sandbox',
