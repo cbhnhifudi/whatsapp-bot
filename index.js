@@ -22,17 +22,17 @@ if (process.env.MONGO_URI) {
         .then(() => {
             console.log('✅ מחובר בהצלחה ל-MongoDB');
 
-            // יצירת Store מבוסס MongoDB לשמירת נתוני החיבור
             const store = new MongoStore({ mongoose: mongoose });
 
-            // הגדרת הבוט עם RemoteAuth
             const client = new Client({
                 authStrategy: new RemoteAuth({
                     store: store,
-                    backupSyncIntervalMs: 300000 // גיבוי סשן כל 5 דקות למונגו
+                    backupSyncIntervalMs: 300000
                 }),
                 puppeteer: {
                     headless: true,
+                    // נתיב מפורש לדפדפן כרום שהותקן בשרת של Render
+                    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, 
                     args: [
                         '--no-sandbox',
                         '--disable-setuid-sandbox',
@@ -40,12 +40,13 @@ if (process.env.MONGO_URI) {
                         '--disable-accelerated-2d-canvas',
                         '--no-first-run',
                         '--no-zygote',
-                        '--disable-gpu'
+                        '--disable-gpu',
+                        '--disable-features=IsolateOrigins,site-per-process',
+                        '--disable-site-isolation-trials'
                     ],
                 }
             });
 
-            // אירועים של הבוט
             client.on('qr', (qr) => {
                 console.log('QR RECEIVED, please scan:');
                 qrcode.generate(qr, { small: true });
@@ -53,10 +54,6 @@ if (process.env.MONGO_URI) {
 
             client.on('ready', () => {
                 console.log('✅ הבוט מחובר ומוכן לעבודה!');
-            });
-
-            client.on('remote_session_saved', () => {
-                console.hologram ? null : console.log('💾 הסשן נשמר בהצלחה ב-MongoDB!');
             });
 
             client.on('message', async msg => {
