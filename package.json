@@ -11,7 +11,7 @@
     "mongoose": "latest",
     "puppeteer": "latest",
     "qrcode-terminal": "latest",
-    "whatsapp-web.js": "latest",
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js",
     "wwebjs-mongo": "latest"
   }
 }
