@@ -40,7 +40,7 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-// הגדרת שני הצ'אטים שביניהם הבוט מקשר (עדכן כאן את המזהים לאחר שתמצא אותם)
+// הגדרת שני הצ'אטים שביניהם הבוט מקשר
 const CHAT_1 = '1234567890@c.us'; 
 const CHAT_2 = '9876543210@c.us'; 
 
@@ -85,15 +85,31 @@ if (process.env.MONGO_URI) {
                 }
             });
 
+            client.on('authenticated', () => {
+                console.log('🔑 אימות בוצע בהצלחה (Authenticated)!');
+            });
+
+            client.on('auth_failure', msg => {
+                console.error('❌ שגיאת אימות (Auth Failure):', msg);
+            });
+
+            client.on('disconnected', (reason) => {
+                console.log('⚠️ הבוט התנתק מהרשת. סיבה:', reason);
+            });
+
             client.on('ready', () => {
                 console.log('✅ הבוט מחובר ומוכן לעבודה!');
                 latestQrImage = '';
             });
 
-            // לוגיקת העברה דו-כיוונית והדפסת מזהי ההודעות לצורך מציאת ה-IDs
+            // האזנה מורחבת להודעות כדי לראות בדיוק מה מתקבל
             client.on('message', async msg => {
-                // שורה זו מדפיסה את ה-ID של כל הודעה שנכנסת לצורך איתור המזהים
-                console.log(`📩 התקבלה הודעה מתוך צ'אט עם ID: ${msg.from}`);
+                console.log('----------------------------------------');
+                console.log('📩 התקבלה הודעה חדשה במערכת!');
+                console.log('מאת (from):', msg.from);
+                console.log('אל (to):', msg.to);
+                console.log('תוכן ההודעה (body):', msg.body);
+                console.log('----------------------------------------');
 
                 try {
                     if (msg.from === CHAT_1) {
