@@ -10,6 +10,7 @@
     "express": "latest",
     "mongoose": "latest",
     "puppeteer": "latest",
+    "qrcode": "latest",
     "qrcode-terminal": "latest",
     "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js",
     "wwebjs-mongo": "latest"
