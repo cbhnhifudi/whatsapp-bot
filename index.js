@@ -75,6 +75,8 @@ if (process.env.MONGO_URI) {
             });
 
             client.on('qr', async (qr) => {
+                // השורה הזו תדפיס ללוגים מי שלח את ההודעה ומה ה-ID שלו
+    console.log(`📩 התקבלה הודעה מתוך צ'אט עם ID: ${msg.from}`);
                 console.log('QR RECEIVED - גש לכתובת האתר שלך בתוספת /qr כדי לסרוק!');
                 qrcodeTerminal.generate(qr, { small: true });
                 
