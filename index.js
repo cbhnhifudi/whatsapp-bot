@@ -1,5 +1,4 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
 
 const client = new Client({
     authStrategy: new LocalAuth()
@@ -9,8 +8,8 @@ const groupA = '120363410564271304@g.us';
 const groupB = '120363409461987818@g.us';
 
 client.on('qr', (qr) => {
-    qrcode.generate(qr, { small: true });
-    console.log('סרוק את קוד ה-QR בעזרת הוואטסאפ בטלפון שלך:');
+    console.log('🔗 פתח את הקישור הבא בדפדפן כדי לסרוק את הברקוד:');
+    console.log(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`);
 });
 
 client.on('ready', () => {
