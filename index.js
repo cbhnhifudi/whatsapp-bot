@@ -3,7 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { MongoStore } = require('wwebjs-mongo');
 
-// 🌐 שרת HTTP עבור Render למניעת שגיאת Timeout
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -15,7 +14,6 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on port ${port}`);
 });
 
-// 🍃 חיבור ל-MongoDB Atlas ושמירת סשן הוואטסאפ בענן
 const mongoUri = process.env.MONGO_URI;
 
 if (!mongoUri) {
@@ -30,7 +28,7 @@ mongoose.connect(mongoUri).then(() => {
     const client = new Client({
         authStrategy: new RemoteAuth({
             store: store,
-            backupSyncIntervalMs: 300000 // גיבוי נתוני התחברות לענן כל 5 דקות
+            backupSyncIntervalMs: 300000
         }),
         puppeteer: {
             args: [
@@ -46,6 +44,7 @@ mongoose.connect(mongoUri).then(() => {
         }
     });
 
+    // ודא שמזהי הקבוצות מדויקים כאן
     const groupA = '120363410564271304@g.us';
     const groupB = '120363409461987818@g.us';
 
@@ -59,11 +58,18 @@ mongoose.connect(mongoUri).then(() => {
     });
 
     client.on('message', async (msg) => {
-        console.log('📥 התקבלה הודעה מזהה:', msg.from);
+        // הדפסת כל הודעה שמגיעה כדי שנראה מה ה-ID שלה
+        console.log(`📥 התקבלה הודעה | מזהה שולח/קבוצה: ${msg.from} | האם נשלח ממני? ${msg.fromMe}`);
 
-        if (msg.fromMe) return;
+        // הערה: אם אתה שולח הודעה בעצמך מהטלפון שלך לקבוצה, msg.fromMe יהיה true 
+        // והבוט יתעלם ממנה. כדי לבדוק, שלח הודעה מחשבון אחר או הסר את הסינון זמנית.
+        if (msg.fromMe) {
+            console.log('⚠️ הבוט התעלם מהודעה כי היא נשלחה מהחשבון המחובר (msg.fromMe).');
+            return;
+        }
 
         if (msg.from === groupA || msg.from === groupB) {
+            console.log('🎯 ההודעה שייכת לאחת הקבוצות המוגדרות! מעבד...');
             try {
                 const contact = await msg.getContact();
                 const phoneNumber = contact.id.user || contact.number;
@@ -85,10 +91,12 @@ mongoose.connect(mongoUri).then(() => {
                     mentions: [contact.id._serialized]
                 });
 
-                console.log('🚀 הודעה הועברה בהצלחה כולל תיוג ותגובה');
+                console.log('🚀 הודעה הועברה בהצלחה לקבוצה השנייה!');
             } catch (err) {
                 console.error('❌ שגיאה בטיפול בהודעה:', err.message);
             }
+        } else {
+            console.log(`⚠️ מזהה הקבוצה (${msg.from}) אינו תואם ל-groupA או groupB שהוגדרו בקוד.`);
         }
     });
 
