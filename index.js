@@ -1,7 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const express = require('express');
 
-// 🌐 יצירת שרת אינטרנט פשוט עבור Render
+// 🌐 יצירת שרת אינטרנט פשוט עבור Render למניעת שגיאת Timeout
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -30,6 +30,8 @@ client.on('ready', () => {
 });
 
 client.on('message', async (msg) => {
+    console.log('📥 התקבלה הודעה מזהה:', msg.from);
+
     if (msg.fromMe) return;
 
     if (msg.from === groupA || msg.from === groupB) {
