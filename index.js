@@ -31,7 +31,19 @@ mongoose.connect(mongoUri).then(() => {
         authStrategy: new RemoteAuth({
             store: store,
             backupSyncIntervalMs: 300000 // גיבוי נתוני התחברות לענן כל 5 דקות
-        })
+        }),
+        puppeteer: {
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--disable-gpu'
+            ],
+            headless: true
+        }
     });
 
     const groupA = '120363410564271304@g.us';
