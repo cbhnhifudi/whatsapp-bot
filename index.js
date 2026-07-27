@@ -16,9 +16,9 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-// הגדרת מזהי הצ'אטים מתוך משתני הסביבה ב-Render
-const SOURCE_CHAT_ID = process.env.SOURCE_CHAT_ID; // צ'אט שממנו מעבירים
-const TARGET_CHAT_ID = process.env.TARGET_CHAT_ID; // צ'אט שאליו מעבירים
+// הגדרת שני הצ'אטים שביניהם הבוט מקשר (שמים כאן את המזהים שלהם)
+const CHAT_1 = '1234567890@c.us'; // החלף במזהה של הצ'אט הראשון
+const CHAT_2 = '9876543210@c.us'; // החלף במזהה של הצ'אט השני
 
 // חיבור למסד הנתונים MongoDB ואז הפעלת הבוט
 if (process.env.MONGO_URI) {
@@ -59,16 +59,18 @@ if (process.env.MONGO_URI) {
                 console.log('✅ הבוט מחובר ומוכן לעבודה!');
             });
 
-            // לוגיקת העברת הודעות
+            // לוגיקת העברה דו-כיוונית בין הצ'אטים
             client.on('message', async msg => {
                 try {
-                    // בדיקה אם ההודעה הגיעה מצ'אט המקור המוגדר
-                    if (SOURCE_CHAT_ID && msg.from === SOURCE_CHAT_ID) {
-                        if (TARGET_CHAT_ID) {
-                            // העברת תוכן ההודעה לצ'אט היעד
-                            await client.sendMessage(TARGET_CHAT_ID, `הודעה שהתקבלה:\n${msg.body}`);
-                            console.log('🔄 הודעה הועברה בהצלחה!');
-                        }
+                    // אם ההודעה הגיעה מצ'אט 1 -> שלח לצ'אט 2
+                    if (msg.from === CHAT_1) {
+                        await client.sendMessage(CHAT_2, `${msg.body}`);
+                        console.log('🔄 הודעה הועברה מצ\'אט 1 לצ\'אט 2');
+                    }
+                    // אם ההודעה הגיעה מצ'אט 2 -> שלח לצ'אט 1
+                    else if (msg.from === CHAT_2) {
+                        await client.sendMessage(CHAT_1, `${msg.body}`);
+                        console.log('🔄 הודעה הועברה מצ\'אט 2 לצ\'אט 1');
                     }
                 } catch (err) {
                     console.error('❌ שגיאה בהעברת הודעה:', err);
