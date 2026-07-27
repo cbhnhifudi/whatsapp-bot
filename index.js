@@ -75,6 +75,17 @@ if (process.env.MONGO_URI) {
                 } catch (err) {
                     console.error('❌ שגיאה בהעברת הודעה:', err);
                 }
+                client.on('ready', async () => {
+    console.log('✅ הבוט מחובר ומוכן לעבודה!');
+    
+    // שליפת כל הצ'אטים והדפסת המזהים שלהם ללוגים
+    const chats = await client.getChats();
+    console.log('--- רשימת צ\'אטים זמינים ---');
+    chats.forEach(chat => {
+        console.log(`שם: ${chat.name} | מזהה (ID): ${chat.id._serialized}`);
+    });
+    console.log('---------------------------');
+});
             });
 
             client.initialize();
